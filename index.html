@@ -374,6 +374,97 @@
             border-radius: 8px;
             margin-top: 15px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .shooting-stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: shootingStar 2s ease-out forwards;
+        }
+        
+        .star::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 2px;
+            height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .star-1 {
+            width: 3px;
+            height: 3px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0.2s;
+        }
+        
+        .star-2 {
+            width: 2px;
+            height: 2px;
+            top: 40%;
+            left: 30%;
+            animation-delay: 0.5s;
+        }
+        
+        .star-3 {
+            width: 4px;
+            height: 4px;
+            top: 60%;
+            left: 70%;
+            animation-delay: 0.8s;
+        }
+        
+        .star-4 {
+            width: 2px;
+            height: 2px;
+            top: 30%;
+            left: 80%;
+            animation-delay: 1.1s;
+        }
+        
+        .star-5 {
+            width: 3px;
+            height: 3px;
+            top: 70%;
+            left: 20%;
+            animation-delay: 1.4s;
+        }
+        
+        @keyframes shootingStar {
+            0% {
+                opacity: 0;
+                transform: translateX(-100px) translateY(-100px) scale(0);
+            }
+            20% {
+                opacity: 1;
+                transform: translateX(0) translateY(0) scale(1);
+            }
+            80% {
+                opacity: 1;
+                transform: translateX(100px) translateY(50px) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(200px) translateY(100px) scale(0);
+            }
         }
         
         .loading-message {
@@ -440,8 +531,8 @@
             <p class="tagline">Transforming Lives with a Tap</p>
             
             <div class="event-description">
-                <h3>Be Part of Africa's Health Revolution</h3>
-                <p>No Hospital? No Problem. Healthcare is Going Mobile with MEDZEN. Bringing Healthcare & Doctors to Every Doorstep In Africa.</p>
+                <h3>Support Our Mission!</h3>
+                <p>Help us bring accessible, life saving healthcare to underserved communities in Africa.</p>
             </div>
             
             <div class="event-details">
@@ -481,6 +572,10 @@
                             <label for="email">Email Address (Optional)</label>
                             <input type="email" id="email" name="email">
                         </div>
+                        <div class="form-group">
+                            <label for="guestBy">Guest by (Optional)</label>
+                            <input type="text" id="guestBy" name="guestBy" placeholder="Enter name of your host">
+                        </div>
                         <button type="submit" class="submit-btn">Submit RSVP</button>
                         <button type="button" class="cancel-btn" onclick="hideRSVPForm()">Cancel</button>
                     </form>
@@ -488,7 +583,14 @@
                         Submitting your RSVP... Please wait.
                     </div>
                     <div class="success-message" id="successMessage">
-                        Thank you for your RSVP! We look forward to seeing you at the event.
+                        <div class="shooting-stars">
+                            <div class="star star-1"></div>
+                            <div class="star star-2"></div>
+                            <div class="star star-3"></div>
+                            <div class="star star-4"></div>
+                            <div class="star star-5"></div>
+                        </div>
+                        🎉 Thank you for registering! We look forward to seeing you at the event.
                     </div>
                 </div>
                 
@@ -531,6 +633,7 @@
                 name: formData.get('name'),
                 phone: formData.get('phone'),
                 email: formData.get('email') || 'Not provided',
+                guestBy: formData.get('guestBy') || 'Not specified',
                 timestamp: new Date().toLocaleString(),
                 event: 'MedZen Network & Fundraising Event - August 2nd, 2025'
             };
