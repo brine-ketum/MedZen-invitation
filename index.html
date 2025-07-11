@@ -467,9 +467,9 @@
             }
         }
         
-        .loading-message {
+        .error-message {
             display: none;
-            background: #3498db;
+            background: #e74c3c;
             color: white;
             padding: 15px;
             border-radius: 8px;
@@ -582,6 +582,9 @@
                     <div class="loading-message" id="loadingMessage">
                         Submitting your RSVP... Please wait.
                     </div>
+                    <div class="error-message" id="errorMessage">
+                        <!-- Error message will be displayed here -->
+                    </div>
                     <div class="success-message" id="successMessage">
                         <div class="shooting-stars">
                             <div class="star star-1"></div>
@@ -617,6 +620,7 @@
             document.getElementById('rsvpForm').style.display = 'none';
             document.querySelector('.rsvp-button').style.display = 'inline-block';
             document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
             document.getElementById('successMessage').style.display = 'none';
             document.getElementById('attendeeForm').style.display = 'block';
         }
@@ -627,6 +631,8 @@
             // Show loading message
             document.getElementById('attendeeForm').style.display = 'none';
             document.getElementById('loadingMessage').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
             
             const formData = new FormData(this);
             const data = {
@@ -648,15 +654,23 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(data)
-            }).then(() => {
-                console.log('RSVP submitted successfully');
+            }).then(response => {
+                // Since we're using no-cors mode, we can't read the actual response
+                // We'll assume success and show the success message
+                console.log('RSVP submitted');
                 document.getElementById('loadingMessage').style.display = 'none';
                 document.getElementById('successMessage').style.display = 'block';
             }).catch((error) => {
                 console.error('Error submitting RSVP:', error);
-                // Still show success message since no-cors mode doesn't return errors
                 document.getElementById('loadingMessage').style.display = 'none';
-                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('errorMessage').innerHTML = 'Registration failed. Please try again or contact us directly.';
+                document.getElementById('errorMessage').style.display = 'block';
+                
+                // Show form again for retry
+                setTimeout(() => {
+                    document.getElementById('attendeeForm').style.display = 'block';
+                    document.getElementById('errorMessage').style.display = 'none';
+                }, 3000);
             });
         });
     </script>
