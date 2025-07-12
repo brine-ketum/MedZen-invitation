@@ -467,9 +467,9 @@
             }
         }
         
-        .error-message {
+        .loading-message {
             display: none;
-            background: #e74c3c;
+            background: #3498db;
             color: white;
             padding: 15px;
             border-radius: 8px;
@@ -599,7 +599,7 @@
                 
                 <div class="contact-info">
                     <p><strong>Contact Information:</strong><br>
-                    📧 Info@Mylestechsolutions.com<br>
+                    📧 events@mylestechsolutionsllc.com<br>
                     🌐 www.Mylestechsolution.com</p>
                     <p style="margin-top: 15px; font-style: italic;">
                         Presented by MylesTech Solutions<br>
@@ -628,7 +628,7 @@
         document.getElementById('attendeeForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Show loading message
+            // Show loading message ONLY after form submission
             document.getElementById('attendeeForm').style.display = 'none';
             document.getElementById('loadingMessage').style.display = 'block';
             document.getElementById('errorMessage').style.display = 'none';
@@ -663,7 +663,7 @@
             }).catch((error) => {
                 console.error('Error submitting RSVP:', error);
                 document.getElementById('loadingMessage').style.display = 'none';
-                document.getElementById('errorMessage').innerHTML = 'Registration failed. Please try again or contact us directly.';
+                document.getElementById('errorMessage').innerHTML = 'Registration failed. Please try again or contact us at events@mylestechsolutionsllc.com';
                 document.getElementById('errorMessage').style.display = 'block';
                 
                 // Show form again for retry
