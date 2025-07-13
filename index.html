@@ -173,23 +173,18 @@
         /* Updated logo styles */
         .medzen-logo-img {
             width: 320px;
-            height: auto;
-            max-height: 200px;
-            object-fit: contain;
+            height: 320px;
+            object-fit: cover;
             filter: drop-shadow(0 8px 20px rgba(39, 174, 96, 0.4));
             transition: transform 0.3s ease;
             margin-bottom: 15px;
             animation: pulseLogo 3s infinite;
             transform-origin: center;
             background: transparent;
-            /* Try to remove white background */
-            mix-blend-mode: multiply;
-            filter: drop-shadow(0 8px 20px rgba(39, 174, 96, 0.4)) 
-                    contrast(1.2) 
-                    brightness(1.1);
-            /* Circular crop to remove corners */
-            clip-path: circle(45% at center);
+            /* Perfect circle */
             border-radius: 50%;
+            clip-path: circle(50% at center);
+            border: 3px solid rgba(39, 174, 96, 0.2);
         }
         
         .medzen-logo-img:hover {
@@ -613,7 +608,7 @@
             
             .medzen-logo-img {
                 width: 250px;
-                max-height: 150px;
+                height: 250px;
             }
             
             .event-title {
