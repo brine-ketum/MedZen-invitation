@@ -290,11 +290,55 @@
             transition: all 0.3s ease;
             box-shadow: 0 5px 20px rgba(230, 126, 34, 0.3);
             margin-bottom: 20px;
+            position: relative;
+            animation: pulseButton 2s infinite;
+            transform-origin: center;
         }
         
         .rsvp-button:hover {
-            transform: translateY(-2px);
+            transform: translateY(-2px) scale(1.05);
             box-shadow: 0 8px 25px rgba(230, 126, 34, 0.4);
+            animation: none;
+        }
+        
+        .rsvp-button:active {
+            transform: translateY(0) scale(0.98);
+        }
+        
+        .rsvp-button::before {
+            content: '👇';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            animation: pointDown 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulseButton {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 5px 20px rgba(230, 126, 34, 0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 8px 30px rgba(230, 126, 34, 0.5);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 5px 20px rgba(230, 126, 34, 0.3);
+            }
+        }
+        
+        @keyframes pointDown {
+            0%, 100% {
+                transform: translateX(-50%) translateY(0px);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateX(-50%) translateY(5px);
+                opacity: 1;
+            }
         }
         
         .contact-info {
@@ -370,7 +414,7 @@
             display: none;
             background: #27ae60;
             color: white;
-            padding: 15px;
+            padding: 20px;
             border-radius: 8px;
             margin-top: 15px;
             text-align: center;
@@ -379,37 +423,48 @@
         }
         
         .barcode-section {
-            margin-top: 20px;
-            padding: 15px;
             background: white;
-            border-radius: 8px;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
             border: 2px dashed #27ae60;
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.1);
+        }
+        
+        .barcode-container {
+            text-align: center;
+            margin: 15px 0;
+            max-width: 100%;
+            overflow: hidden;
         }
         
         .barcode {
-            font-family: 'Courier New', monospace;
-            font-size: 24px;
-            letter-spacing: 2px;
-            color: #000;
             margin: 10px 0;
-            background: white;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            letter-spacing: 1px;
         }
         
-        .qr-code {
-            width: 100px;
-            height: 100px;
-            margin: 10px auto;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: #666;
+        .barcode-id {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        
+        .ticket-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-align: left;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        
+        .ticket-info h4 {
+            margin-bottom: 10px;
+            color: #27ae60;
         }
         
         .shooting-stars {
@@ -511,6 +566,25 @@
             text-align: center;
         }
         
+        .error-message {
+            display: none;
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .scan-instructions {
+            background: #27ae60;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
         @media (max-width: 480px) {
             .content {
                 padding: 25px;
@@ -588,6 +662,17 @@
                 </div>
             </div>
             
+            <!-- Barcode Section - Always Visible -->
+            <div class="barcode-section">
+                <h3 style="color: #27ae60; margin-bottom: 15px;">🎫 Your Invitation Code</h3>
+                <div class="barcode-container">
+                    <svg id="invitationBarcode" width="100%" height="80"></svg>
+                </div>
+                <div class="scan-instructions">
+                    📱 Save this page and show at entrance for quick check-in
+                </div>
+            </div>
+            
             <div class="rsvp-section">
                 <button class="rsvp-button" onclick="showRSVPForm()">RSVP NOW</button>
                 
@@ -627,60 +712,27 @@
                             <div class="star star-4"></div>
                             <div class="star star-5"></div>
                         </div>
-                        🎉 Thank you for registering! We look forward to seeing you at the event.
+                        <div style="color: white; font-weight: bold; margin-bottom: 15px;">
+                            🎉 Registration Successful!
+                        </div>
                         
                         <div class="barcode-section">
-                            <div style="color: #27ae60; font-weight: bold; margin-bottom: 10px;">Your Event Ticket</div>
-                            <div class="barcode" id="userBarcode">MEDZEN2025000000</div>
-                            <div class="qr-code" id="qrCode">
-                                <svg width="80" height="80" viewBox="0 0 80 80">
-                                    <rect width="80" height="80" fill="white"/>
-                                    <g fill="black">
-                                        <rect x="8" y="8" width="4" height="4"/>
-                                        <rect x="16" y="8" width="4" height="4"/>
-                                        <rect x="24" y="8" width="4" height="4"/>
-                                        <rect x="32" y="8" width="4" height="4"/>
-                                        <rect x="48" y="8" width="4" height="4"/>
-                                        <rect x="56" y="8" width="4" height="4"/>
-                                        <rect x="64" y="8" width="4" height="4"/>
-                                        <rect x="8" y="16" width="4" height="4"/>
-                                        <rect x="32" y="16" width="4" height="4"/>
-                                        <rect x="48" y="16" width="4" height="4"/>
-                                        <rect x="64" y="16" width="4" height="4"/>
-                                        <rect x="8" y="24" width="4" height="4"/>
-                                        <rect x="16" y="24" width="4" height="4"/>
-                                        <rect x="24" y="24" width="4" height="4"/>
-                                        <rect x="40" y="24" width="4" height="4"/>
-                                        <rect x="56" y="24" width="4" height="4"/>
-                                        <rect x="64" y="24" width="4" height="4"/>
-                                        <rect x="8" y="32" width="4" height="4"/>
-                                        <rect x="24" y="32" width="4" height="4"/>
-                                        <rect x="40" y="32" width="4" height="4"/>
-                                        <rect x="48" y="32" width="4" height="4"/>
-                                        <rect x="56" y="32" width="4" height="4"/>
-                                        <rect x="16" y="40" width="4" height="4"/>
-                                        <rect x="32" y="40" width="4" height="4"/>
-                                        <rect x="48" y="40" width="4" height="4"/>
-                                        <rect x="64" y="40" width="4" height="4"/>
-                                        <rect x="8" y="48" width="4" height="4"/>
-                                        <rect x="24" y="48" width="4" height="4"/>
-                                        <rect x="40" y="48" width="4" height="4"/>
-                                        <rect x="56" y="48" width="4" height="4"/>
-                                        <rect x="16" y="56" width="4" height="4"/>
-                                        <rect x="32" y="56" width="4" height="4"/>
-                                        <rect x="48" y="56" width="4" height="4"/>
-                                        <rect x="64" y="56" width="4" height="4"/>
-                                        <rect x="8" y="64" width="4" height="4"/>
-                                        <rect x="16" y="64" width="4" height="4"/>
-                                        <rect x="24" y="64" width="4" height="4"/>
-                                        <rect x="32" y="64" width="4" height="4"/>
-                                        <rect x="48" y="64" width="4" height="4"/>
-                                        <rect x="56" y="64" width="4" height="4"/>
-                                        <rect x="64" y="64" width="4" height="4"/>
-                                    </g>
-                                </svg>
+                            <h4>🎫 Your Event Ticket</h4>
+                            <div class="barcode-container">
+                                <svg id="attendeeBarcode" width="250" height="60"></svg>
+                                <div class="barcode-id" id="barcodeId">ID: Loading...</div>
                             </div>
-                            <div style="color: #666; font-size: 12px;">Show this ticket at the event entrance</div>
+                            <div class="scan-instructions">
+                                📱 Show this barcode at the entrance for quick check-in
+                            </div>
+                            <div class="ticket-info" id="ticketInfo">
+                                <h4>📋 Attendee Details</h4>
+                                <div id="attendeeDetails">Loading...</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 15px; font-size: 14px;">
+                            📧 A copy of this ticket has been sent to your email
                         </div>
                     </div>
                 </div>
@@ -699,7 +751,96 @@
         </div>
     </div>
 
+    <!-- Include JsBarcode library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+
     <script>
+        let invitationId = null;
+        
+        function generateInvitationId() {
+            const timestamp = Date.now().toString(36).substring(-4);
+            const randomStr = Math.random().toString(36).substring(2, 6);
+            return `MZ-INV-${timestamp}${randomStr}`.toUpperCase();
+        }
+        
+        function generateInvitationBarcode() {
+            // Check if we already have an ID stored
+            invitationId = localStorage.getItem('medzen_invitation_id');
+            
+            if (!invitationId) {
+                // Generate new invitation ID
+                invitationId = generateInvitationId();
+                localStorage.setItem('medzen_invitation_id', invitationId);
+            }
+            
+            try {
+                // Generate barcode using Code128 with the shorter invitation ID
+                JsBarcode("#invitationBarcode", invitationId, {
+                    format: "CODE128",
+                    width: 1.8,
+                    height: 60,
+                    displayValue: false,
+                    background: "#ffffff",
+                    lineColor: "#000000",
+                    margin: 5
+                });
+                
+            } catch (error) {
+                console.error('Error generating invitation barcode:', error);
+            }
+        }
+        
+        // Generate invitation barcode when page loads
+        window.addEventListener('load', function() {
+            // Small delay to ensure JsBarcode library is loaded
+            setTimeout(generateInvitationBarcode, 500);
+        });
+        
+        let currentAttendeeData = null;
+        
+        function generateUniqueId() {
+            const timestamp = Date.now().toString(36);
+            const randomStr = Math.random().toString(36).substring(2, 8);
+            return `MZ${timestamp}${randomStr}`.toUpperCase();
+        }
+        
+        function generateBarcode(data) {
+            const uniqueId = generateUniqueId();
+            
+            // Create barcode data string
+            const barcodeData = `${uniqueId}|${data.name}|${data.phone}|${data.email}`;
+            
+            try {
+                // Generate barcode using Code128
+                JsBarcode("#attendeeBarcode", barcodeData, {
+                    format: "CODE128",
+                    width: 2,
+                    height: 50,
+                    displayValue: false,
+                    background: "#ffffff",
+                    lineColor: "#000000"
+                });
+                
+                // Update barcode ID display
+                document.getElementById('barcodeId').textContent = `ID: ${uniqueId}`;
+                
+                // Update attendee details
+                document.getElementById('attendeeDetails').innerHTML = `
+                    <strong>Name:</strong> ${data.name}<br>
+                    <strong>Phone:</strong> ${data.phone}<br>
+                    <strong>Email:</strong> ${data.email || 'Not provided'}<br>
+                    <strong>Guest of:</strong> ${data.guestBy || 'Not specified'}<br>
+                    <strong>Registration:</strong> ${data.timestamp}
+                `;
+                
+                return uniqueId;
+            } catch (error) {
+                console.error('Error generating barcode:', error);
+                document.getElementById('barcodeId').textContent = 'Barcode generation failed';
+                return null;
+            }
+        }
+        
         function showRSVPForm() {
             document.getElementById('rsvpForm').style.display = 'block';
             document.querySelector('.rsvp-button').style.display = 'none';
@@ -717,7 +858,7 @@
         document.getElementById('attendeeForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Show loading message ONLY after form submission
+            // Show loading message
             document.getElementById('attendeeForm').style.display = 'none';
             document.getElementById('loadingMessage').style.display = 'block';
             document.getElementById('errorMessage').style.display = 'none';
@@ -730,22 +871,16 @@
                 email: formData.get('email') || 'Not provided',
                 guestBy: formData.get('guestBy') || 'Not specified',
                 timestamp: new Date().toLocaleString(),
-                event: 'MedZen Network & Fundraising Event - August 2nd, 2025'
+                event: 'MedZen Network & Fundraising Event - August 2nd, 2025',
+                invitationId: invitationId // Include the invitation ID
             };
+            
+            // Store attendee data for barcode generation
+            currentAttendeeData = data;
             
             console.log('Submitting RSVP data:', data);
             
-            // Generate unique barcode for user
-            const generateBarcode = (name, phone) => {
-                const nameCode = name.substring(0, 3).toUpperCase().padEnd(3, 'X');
-                const phoneCode = phone.replace(/\D/g, '').substring(-4).padStart(4, '0');
-                const randomCode = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-                return `MZ25${nameCode}${phoneCode}${randomCode}`;
-            };
-            
-            const userBarcode = generateBarcode(data.name, data.phone);
-            
-            // Send to your updated Google Apps Script
+            // Send to your Google Apps Script
             fetch('https://script.google.com/macros/s/AKfycbwZbBhVkOFlwtaC7qNKb9XSB_B6lIZaIJv11DvarP1r5-ooOUCKPSOV15SSlfVk_SkGRQ/exec', {
                 method: 'POST',
                 mode: 'no-cors',
@@ -754,15 +889,15 @@
                 },
                 body: JSON.stringify(data)
             }).then(response => {
-                // Since we're using no-cors mode, we can't read the actual response
-                // We'll assume success and show the success message
                 console.log('RSVP submitted');
                 document.getElementById('loadingMessage').style.display = 'none';
                 
-                // Update barcode with user's unique code
-                document.getElementById('userBarcode').textContent = userBarcode;
+                // Generate barcode with attendee data
+                const uniqueId = generateBarcode(currentAttendeeData);
                 
+                // Show success message with barcode
                 document.getElementById('successMessage').style.display = 'block';
+                
             }).catch((error) => {
                 console.error('Error submitting RSVP:', error);
                 document.getElementById('loadingMessage').style.display = 'none';
