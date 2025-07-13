@@ -774,17 +774,12 @@
         
         let currentAttendeeData = null;
         
-        function generateUniqueId() {
-            const timestamp = Date.now().toString(36);
-            const randomStr = Math.random().toString(36).substring(2, 8);
-            return `MZ${timestamp}${randomStr}`.toUpperCase();
-        }
-        
-        function generateBarcode(data) {
-            const uniqueId = generateUniqueId();
+        function generateBarcode(serverBarcodeId, data) {
+            // Use the barcode ID from the server, not generate a new one
+            const barcodeId = serverBarcodeId;
             
             // Create barcode data string
-            const barcodeData = `${uniqueId}|${data.name}|${data.phone}|${data.email}`;
+            const barcodeData = `${barcodeId}|${data.name}|${data.phone}|${data.email}`;
             
             try {
                 // Generate barcode using Code128
@@ -797,13 +792,9 @@
                     lineColor: "#000000"
                 });
                 
-                // Update barcode ID display (removed - not needed for users)
-                // document.getElementById('barcodeId').textContent = `ID: ${uniqueId}`;
-                
-                return uniqueId;
+                return barcodeId;
             } catch (error) {
                 console.error('Error generating barcode:', error);
-                document.getElementById('barcodeId').textContent = 'Barcode generation failed';
                 return null;
             }
         }
