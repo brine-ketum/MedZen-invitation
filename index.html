@@ -851,37 +851,20 @@
             // Send to your Google Apps Script
             fetch('https://script.google.com/macros/s/AKfycbwZbBhVkOFlwtaC7qNKb9XSB_B6lIZaIJv11DvarP1r5-ooOUCKPSOV15SSlfVk_SkGRQ/exec', {
                 method: 'POST',
+                mode: 'no-cors',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(data)
             }).then(response => {
-                // Check if response is ok
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            }).then(result => {
-                console.log('Server response:', result);
+                console.log('RSVP submitted');
                 document.getElementById('loadingMessage').style.display = 'none';
                 
-                if (result.status === 'success') {
-                    // Generate barcode with attendee data
-                    const uniqueId = generateBarcode(currentAttendeeData);
-                    
-                    // Show success message with barcode
-                    document.getElementById('successMessage').style.display = 'block';
-                } else {
-                    // Show error message
-                    document.getElementById('errorMessage').innerHTML = result.message || 'Registration failed. Please try again.';
-                    document.getElementById('errorMessage').style.display = 'block';
-                    
-                    // Show form again for retry
-                    setTimeout(() => {
-                        document.getElementById('attendeeForm').style.display = 'block';
-                        document.getElementById('errorMessage').style.display = 'none';
-                    }, 5000);
-                }
+                // Generate barcode with attendee data
+                const uniqueId = generateBarcode(currentAttendeeData);
+                
+                // Show success message with barcode
+                document.getElementById('successMessage').style.display = 'block';
                 
             }).catch((error) => {
                 console.error('Error submitting RSVP:', error);
@@ -893,7 +876,7 @@
                 setTimeout(() => {
                     document.getElementById('attendeeForm').style.display = 'block';
                     document.getElementById('errorMessage').style.display = 'none';
-                }, 5000);
+                }, 3000);
             });
         });
     </script>
