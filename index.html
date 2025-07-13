@@ -398,6 +398,12 @@
             transform: translateY(-1px);
         }
         
+        .submit-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
         .cancel-btn {
             background: #95a5a6;
             color: white;
@@ -673,11 +679,11 @@
                             <label for="guestBy">Guest of (Optional)</label>
                             <input type="text" id="guestBy" name="guestBy" placeholder="Enter name of your host">
                         </div>
-                        <button type="submit" class="submit-btn">Submit RSVP</button>
+                        <button type="submit" class="submit-btn" id="submitBtn">Submit RSVP</button>
                         <button type="button" class="cancel-btn" onclick="hideRSVPForm()">Cancel</button>
                     </form>
                     <div class="loading-message" id="loadingMessage">
-                        Submitting your RSVP... Please wait.
+                        🔄 Submitting your RSVP... Please wait.
                     </div>
                     <div class="error-message" id="errorMessage">
                         <!-- Error message will be displayed here -->
@@ -732,51 +738,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
 
     <script>
-        let invitationId = null;
-        
-        function generateInvitationId() {
-            const timestamp = Date.now().toString(36).substring(-4);
-            const randomStr = Math.random().toString(36).substring(2, 6);
-            return `MZ-INV-${timestamp}${randomStr}`.toUpperCase();
-        }
-        
-        function generateInvitationBarcode() {
-            // Check if we already have an ID stored
-            invitationId = localStorage.getItem('medzen_invitation_id');
-            
-            if (!invitationId) {
-                // Generate new invitation ID
-                invitationId = generateInvitationId();
-                localStorage.setItem('medzen_invitation_id', invitationId);
-            }
-            
-            try {
-                // Generate barcode using Code128 with the shorter invitation ID
-                JsBarcode("#invitationBarcode", invitationId, {
-                    format: "CODE128",
-                    width: 1.8,
-                    height: 60,
-                    displayValue: false,
-                    background: "#ffffff",
-                    lineColor: "#000000",
-                    margin: 5
-                });
-                
-            } catch (error) {
-                console.error('Error generating invitation barcode:', error);
-            }
-        }
-        
-        // Generate invitation barcode when page loads (removed - no longer needed)
-        // window.addEventListener('load', function() {
-        //     setTimeout(generateInvitationBarcode, 500);
-        // });
-        
         let currentAttendeeData = null;
         
+        // FIXED: Generate barcode with proper error handling
         function generateBarcode(serverBarcodeId, data) {
-            // Use the barcode ID from the server, not generate a new one
-            const barcodeId = serverBarcodeId;
+            // Use the barcode ID from the server response
+            const barcodeId = serverBarcodeId || generateUniqueId();
             
             // Create barcode data string
             const barcodeData = `${barcodeId}|${data.name}|${data.phone}|${data.email}`;
@@ -795,8 +762,17 @@
                 return barcodeId;
             } catch (error) {
                 console.error('Error generating barcode:', error);
-                return null;
+                // Show barcode data as text if barcode generation fails
+                document.getElementById('attendeeBarcode').innerHTML = 
+                    `<div style="font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #ddd; background: white;">${barcodeData}</div>`;
+                return barcodeId;
             }
+        }
+        
+        function generateUniqueId() {
+            const timestamp = Date.now().toString(36);
+            const randomStr = Math.random().toString(36).substring(2, 8);
+            return `MZ${timestamp}${randomStr}`.toUpperCase();
         }
         
         function showRSVPForm() {
@@ -813,8 +789,14 @@
             document.getElementById('attendeeForm').style.display = 'block';
         }
         
+        // FIXED: Proper error handling for form submission
         document.getElementById('attendeeForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // Disable submit button to prevent double submission
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
             
             // Show loading message
             document.getElementById('attendeeForm').style.display = 'none';
@@ -830,7 +812,6 @@
                 guestBy: formData.get('guestBy') || 'Not specified',
                 timestamp: new Date().toLocaleString(),
                 event: 'MedZen Network & Fundraising Event - August 2nd, 2025'
-                // Note: No invitation ID needed since we removed the invitation barcode
             };
             
             // Store attendee data for barcode generation
@@ -838,78 +819,133 @@
             
             console.log('Submitting RSVP data:', data);
             
-            // Send to your Google Apps Script - Try CORS first, fallback to no-cors
-            fetch('https://script.google.com/macros/s/AKfycbwZbBhVkOFlwtaC7qNKb9XSB_B6lIZaIJv11DvarP1r5-ooOUCKPSOV15SSlfVk_SkGRQ/exec', {
+            // Send to Google Apps Script with improved error handling
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbwZbBhVkOFlwtaC7qNKb9XSB_B6lIZaIJv11DvarP1r5-ooOUCKPSOV15SSlfVk_SkGRQ/exec';
+            
+            // First attempt with CORS
+            fetch(scriptUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(data)
-            }).then(response => {
+            })
+            .then(function(response) {
                 console.log('Response received:', response);
+                console.log('Response status:', response.status);
+                console.log('Response type:', response.type);
                 
                 // Check if response is ok
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                
+                // Check if response is actually JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    console.warn('Response is not JSON, content-type:', contentType);
+                    throw new Error('Response is not JSON');
+                }
+                
                 return response.json();
-            }).then(result => {
+            })
+            .then(function(result) {
                 console.log('Server response:', result);
-                document.getElementById('loadingMessage').style.display = 'none';
-                
-                if (result.status === 'success') {
-                    // Generate barcode with attendee data
-                    const uniqueId = generateBarcode(currentAttendeeData);
-                    
-                    // Show success message with barcode
-                    document.getElementById('successMessage').style.display = 'block';
-                } else {
-                    // Show error message
-                    document.getElementById('errorMessage').innerHTML = result.message || 'Registration failed. Please try again.';
-                    document.getElementById('errorMessage').style.display = 'block';
-                    
-                    // Show form again for retry
-                    setTimeout(() => {
-                        document.getElementById('attendeeForm').style.display = 'block';
-                        document.getElementById('errorMessage').style.display = 'none';
-                    }, 5000);
-                }
-                
-            }).catch((error) => {
-                console.error('Primary request failed, trying fallback:', error);
-                
-                // Fallback to no-cors mode
-                return fetch('https://script.google.com/macros/s/AKfycbwZbBhVkOFlwtaC7qNKb9XSB_B6lIZaIJv11DvarP1r5-ooOUCKPSOV15SSlfVk_SkGRQ/exec', {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-            }).then(response => {
-                if (response && response.type === 'opaque') {
-                    // no-cors response - assume success
-                    console.log('Fallback request completed');
-                    document.getElementById('loadingMessage').style.display = 'none';
-                    
-                    // Generate barcode
-                    const uniqueId = generateBarcode(currentAttendeeData);
-                    document.getElementById('successMessage').style.display = 'block';
-                }
-            }).catch((finalError) => {
-                console.error('All requests failed:', finalError);
-                document.getElementById('loadingMessage').style.display = 'none';
-                document.getElementById('errorMessage').innerHTML = 'Registration failed. Please check your internet connection or contact us at events@mylestechsolutionsllc.com';
-                document.getElementById('errorMessage').style.display = 'block';
-                
-                // Show form again for retry
-                setTimeout(() => {
-                    document.getElementById('attendeeForm').style.display = 'block';
-                    document.getElementById('errorMessage').style.display = 'none';
-                }, 5000);
+                handleSuccessfulSubmission(result);
+            })
+            .catch(function(error) {
+                console.error('Primary request failed:', error);
+                handleSubmissionError(error, data, scriptUrl);
             });
         });
+        
+        function handleSuccessfulSubmission(result) {
+            document.getElementById('loadingMessage').style.display = 'none';
+            
+            if (result && result.status === 'success') {
+                // Generate barcode with server response
+                const barcodeId = generateBarcode(result.barcodeId, currentAttendeeData);
+                console.log('Generated barcode with ID:', barcodeId);
+                
+                // Show success message with barcode
+                document.getElementById('successMessage').style.display = 'block';
+            } else if (result && result.status === 'error') {
+                // Show specific error message from server
+                showError(result.message || 'Registration failed. Please try again.');
+            } else {
+                // Unknown response format
+                showError('Unexpected response from server. Please try again.');
+            }
+        }
+        
+        function handleSubmissionError(error, data, scriptUrl) {
+            console.error('Handling submission error:', error);
+            
+            // Try fallback with no-cors mode
+            if (!error.message.includes('fallback attempted')) {
+                console.log('Trying fallback method...');
+                
+                setTimeout(function() {
+                    document.getElementById('loadingMessage').innerHTML = '🔄 Trying alternative submission method...';
+                    
+                    fetch(scriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(function(response) {
+                        console.log('Fallback response:', response);
+                        // no-cors response is opaque - assume success if no error thrown
+                        
+                        document.getElementById('loadingMessage').style.display = 'none';
+                        
+                        // Generate barcode (without server barcode ID)
+                        const barcodeId = generateBarcode(null, currentAttendeeData);
+                        console.log('Generated barcode with fallback ID:', barcodeId);
+                        
+                        // Show success message
+                        document.getElementById('successMessage').style.display = 'block';
+                    })
+                    .catch(function(fallbackError) {
+                        console.error('Fallback also failed:', fallbackError);
+                        showError('Registration failed after multiple attempts. Please check your internet connection or contact us directly at events@mylestechsolutionsllc.com');
+                    });
+                }, 2000);
+            } else {
+                // Both attempts failed
+                showError('Registration failed. Please check your internet connection or contact us at events@mylestechsolutionsllc.com');
+            }
+        }
+        
+        function showError(message) {
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('errorMessage').innerHTML = message;
+            document.getElementById('errorMessage').style.display = 'block';
+            
+            // Re-enable form for retry
+            setTimeout(function() {
+                document.getElementById('attendeeForm').style.display = 'block';
+                document.getElementById('errorMessage').style.display = 'none';
+                
+                // Re-enable submit button
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit RSVP';
+            }, 5000);
+        }
+        
+        // Auto-clear success message after 30 seconds
+        setInterval(function() {
+            const successMessage = document.getElementById('successMessage');
+            if (successMessage.style.display === 'block') {
+                setTimeout(function() {
+                    hideRSVPForm();
+                }, 30000);
+            }
+        }, 1000);
     </script>
 </body>
 </html>
