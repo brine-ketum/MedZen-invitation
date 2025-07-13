@@ -662,17 +662,6 @@
                 </div>
             </div>
             
-            <!-- Barcode Section - Always Visible -->
-            <div class="barcode-section">
-                <h3 style="color: #27ae60; margin-bottom: 15px;">🎫 Your Invitation Code</h3>
-                <div class="barcode-container">
-                    <svg id="invitationBarcode" width="100%" height="80"></svg>
-                </div>
-                <div class="scan-instructions">
-                    📱 Save this page and show at entrance for quick check-in
-                </div>
-            </div>
-            
             <div class="rsvp-section">
                 <button class="rsvp-button" onclick="showRSVPForm()">RSVP NOW</button>
                 
@@ -713,7 +702,7 @@
                             <div class="star star-5"></div>
                         </div>
                         <div style="color: white; font-weight: bold; margin-bottom: 15px;">
-                            🎉 Registration Successful!
+                            🎉 Thank You! Registration Successful!
                         </div>
                         
                         <div class="barcode-section">
@@ -728,6 +717,16 @@
                             <div class="ticket-info" id="ticketInfo">
                                 <h4>📋 Attendee Details</h4>
                                 <div id="attendeeDetails">Loading...</div>
+                            </div>
+                            
+                            <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                                <h4 style="color: #2c3e50; margin-bottom: 10px;">📱 How to Save Your Ticket:</h4>
+                                <div style="text-align: left; font-size: 14px; line-height: 1.6;">
+                                    <strong>Option 1:</strong> Take a screenshot of this page<br>
+                                    <strong>Option 2:</strong> Check your email for the ticket<br>
+                                    <strong>Option 3:</strong> Bookmark this page<br><br>
+                                    <strong>At the Event:</strong> Show your saved barcode to staff at the entrance for instant check-in!
+                                </div>
                             </div>
                         </div>
                         
@@ -790,11 +789,10 @@
             }
         }
         
-        // Generate invitation barcode when page loads
-        window.addEventListener('load', function() {
-            // Small delay to ensure JsBarcode library is loaded
-            setTimeout(generateInvitationBarcode, 500);
-        });
+        // Generate invitation barcode when page loads (removed - no longer needed)
+        // window.addEventListener('load', function() {
+        //     setTimeout(generateInvitationBarcode, 500);
+        // });
         
         let currentAttendeeData = null;
         
@@ -871,8 +869,8 @@
                 email: formData.get('email') || 'Not provided',
                 guestBy: formData.get('guestBy') || 'Not specified',
                 timestamp: new Date().toLocaleString(),
-                event: 'MedZen Network & Fundraising Event - August 2nd, 2025',
-                invitationId: invitationId // Include the invitation ID
+                event: 'MedZen Network & Fundraising Event - August 2nd, 2025'
+                // Note: No invitation ID needed since we removed the invitation barcode
             };
             
             // Store attendee data for barcode generation
