@@ -15,7 +15,7 @@
         
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #1e7245 0%, #2a8659 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -59,7 +59,7 @@
         
         .health-cross {
             position: absolute;
-            color: rgba(46, 151, 199, 0.15);
+            color: rgba(39, 174, 96, 0.15);
             font-size: 24px;
             font-weight: bold;
             animation: floatUp linear infinite;
@@ -171,7 +171,7 @@
         }
         
         .medzen-logo {
-            background: linear-gradient(135deg, #2e97c7, #1e6b96);
+            background: linear-gradient(135deg, #27ae60, #1e8449);
             color: white;
             width: 60px;
             height: 60px;
@@ -182,13 +182,13 @@
             font-weight: bold;
             font-size: 24px;
             margin-right: 15px;
-            box-shadow: 0 5px 15px rgba(46, 151, 199, 0.3);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
         }
         
         .company-name {
             font-size: 32px;
             font-weight: 700;
-            background: linear-gradient(135deg, #2e97c7, #1e6b96);
+            background: linear-gradient(135deg, #27ae60, #1e8449);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -204,7 +204,7 @@
         .event-title {
             font-size: 28px;
             font-weight: 700;
-            color: #1e6b96;
+            color: #1e8449;
             margin-bottom: 15px;
             text-align: center;
         }
@@ -219,7 +219,7 @@
         }
         
         .event-description {
-            background: linear-gradient(135deg, #2e97c7, #1e6b96);
+            background: linear-gradient(135deg, #27ae60, #1e8449);
             color: white;
             padding: 25px;
             border-radius: 15px;
@@ -334,11 +334,11 @@
         
         .form-group input:focus {
             outline: none;
-            border-color: #2e97c7;
+            border-color: #27ae60;
         }
         
         .submit-btn {
-            background: linear-gradient(135deg, #2e97c7, #1e6b96);
+            background: linear-gradient(135deg, #27ae60, #1e8449);
             color: white;
             padding: 12px 30px;
             border: none;
@@ -376,6 +376,40 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+        }
+        
+        .barcode-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px dashed #27ae60;
+        }
+        
+        .barcode {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            letter-spacing: 2px;
+            color: #000;
+            margin: 10px 0;
+            background: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .qr-code {
+            width: 100px;
+            height: 100px;
+            margin: 10px auto;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
         }
         
         .shooting-stars {
@@ -469,7 +503,7 @@
         
         .loading-message {
             display: none;
-            background: #3498db;
+            background: #27ae60;
             color: white;
             padding: 15px;
             border-radius: 8px;
@@ -573,7 +607,7 @@
                             <input type="email" id="email" name="email">
                         </div>
                         <div class="form-group">
-                            <label for="guestBy">Guest by (Optional)</label>
+                            <label for="guestBy">Guest of (Optional)</label>
                             <input type="text" id="guestBy" name="guestBy" placeholder="Enter name of your host">
                         </div>
                         <button type="submit" class="submit-btn">Submit RSVP</button>
@@ -594,12 +628,67 @@
                             <div class="star star-5"></div>
                         </div>
                         🎉 Thank you for registering! We look forward to seeing you at the event.
+                        
+                        <div class="barcode-section">
+                            <div style="color: #27ae60; font-weight: bold; margin-bottom: 10px;">Your Event Ticket</div>
+                            <div class="barcode" id="userBarcode">MEDZEN2025000000</div>
+                            <div class="qr-code" id="qrCode">
+                                <svg width="80" height="80" viewBox="0 0 80 80">
+                                    <rect width="80" height="80" fill="white"/>
+                                    <g fill="black">
+                                        <rect x="8" y="8" width="4" height="4"/>
+                                        <rect x="16" y="8" width="4" height="4"/>
+                                        <rect x="24" y="8" width="4" height="4"/>
+                                        <rect x="32" y="8" width="4" height="4"/>
+                                        <rect x="48" y="8" width="4" height="4"/>
+                                        <rect x="56" y="8" width="4" height="4"/>
+                                        <rect x="64" y="8" width="4" height="4"/>
+                                        <rect x="8" y="16" width="4" height="4"/>
+                                        <rect x="32" y="16" width="4" height="4"/>
+                                        <rect x="48" y="16" width="4" height="4"/>
+                                        <rect x="64" y="16" width="4" height="4"/>
+                                        <rect x="8" y="24" width="4" height="4"/>
+                                        <rect x="16" y="24" width="4" height="4"/>
+                                        <rect x="24" y="24" width="4" height="4"/>
+                                        <rect x="40" y="24" width="4" height="4"/>
+                                        <rect x="56" y="24" width="4" height="4"/>
+                                        <rect x="64" y="24" width="4" height="4"/>
+                                        <rect x="8" y="32" width="4" height="4"/>
+                                        <rect x="24" y="32" width="4" height="4"/>
+                                        <rect x="40" y="32" width="4" height="4"/>
+                                        <rect x="48" y="32" width="4" height="4"/>
+                                        <rect x="56" y="32" width="4" height="4"/>
+                                        <rect x="16" y="40" width="4" height="4"/>
+                                        <rect x="32" y="40" width="4" height="4"/>
+                                        <rect x="48" y="40" width="4" height="4"/>
+                                        <rect x="64" y="40" width="4" height="4"/>
+                                        <rect x="8" y="48" width="4" height="4"/>
+                                        <rect x="24" y="48" width="4" height="4"/>
+                                        <rect x="40" y="48" width="4" height="4"/>
+                                        <rect x="56" y="48" width="4" height="4"/>
+                                        <rect x="16" y="56" width="4" height="4"/>
+                                        <rect x="32" y="56" width="4" height="4"/>
+                                        <rect x="48" y="56" width="4" height="4"/>
+                                        <rect x="64" y="56" width="4" height="4"/>
+                                        <rect x="8" y="64" width="4" height="4"/>
+                                        <rect x="16" y="64" width="4" height="4"/>
+                                        <rect x="24" y="64" width="4" height="4"/>
+                                        <rect x="32" y="64" width="4" height="4"/>
+                                        <rect x="48" y="64" width="4" height="4"/>
+                                        <rect x="56" y="64" width="4" height="4"/>
+                                        <rect x="64" y="64" width="4" height="4"/>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div style="color: #666; font-size: 12px;">Show this ticket at the event entrance</div>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="contact-info">
                     <p><strong>Contact Information:</strong><br>
                     📧 events@mylestechsolutionsllc.com<br>
+                    📱 (240) 460-4692<br>
                     🌐 www.Mylestechsolution.com</p>
                     <p style="margin-top: 15px; font-style: italic;">
                         Presented by MylesTech Solutions<br>
@@ -646,6 +735,16 @@
             
             console.log('Submitting RSVP data:', data);
             
+            // Generate unique barcode for user
+            const generateBarcode = (name, phone) => {
+                const nameCode = name.substring(0, 3).toUpperCase().padEnd(3, 'X');
+                const phoneCode = phone.replace(/\D/g, '').substring(-4).padStart(4, '0');
+                const randomCode = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+                return `MZ25${nameCode}${phoneCode}${randomCode}`;
+            };
+            
+            const userBarcode = generateBarcode(data.name, data.phone);
+            
             // Send to your updated Google Apps Script
             fetch('https://script.google.com/macros/s/AKfycbwZbBhVkOFlwtaC7qNKb9XSB_B6lIZaIJv11DvarP1r5-ooOUCKPSOV15SSlfVk_SkGRQ/exec', {
                 method: 'POST',
@@ -659,6 +758,10 @@
                 // We'll assume success and show the success message
                 console.log('RSVP submitted');
                 document.getElementById('loadingMessage').style.display = 'none';
+                
+                // Update barcode with user's unique code
+                document.getElementById('userBarcode').textContent = userBarcode;
+                
                 document.getElementById('successMessage').style.display = 'block';
             }).catch((error) => {
                 console.error('Error submitting RSVP:', error);
