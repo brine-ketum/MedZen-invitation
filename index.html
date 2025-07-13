@@ -182,10 +182,14 @@
             animation: pulseLogo 3s infinite;
             transform-origin: center;
             background: transparent;
-            border-radius: 50%;
-            padding: 0;
-            border: none;
+            /* Try to remove white background */
             mix-blend-mode: multiply;
+            filter: drop-shadow(0 8px 20px rgba(39, 174, 96, 0.4)) 
+                    contrast(1.2) 
+                    brightness(1.1);
+            /* Circular crop to remove corners */
+            clip-path: circle(45% at center);
+            border-radius: 50%;
         }
         
         .medzen-logo-img:hover {
