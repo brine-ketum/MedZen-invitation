@@ -701,7 +701,6 @@
                         <div class="barcode-section">
                             <div class="barcode-container">
                                 <svg id="attendeeBarcode" width="250" height="60"></svg>
-                                <div class="barcode-id" id="barcodeId">ID: Loading...</div>
                             </div>
                             <div class="scan-instructions">
                                 📱 Please save this page or take a screenshot<br>
@@ -798,8 +797,8 @@
                     lineColor: "#000000"
                 });
                 
-                // Update barcode ID display
-                document.getElementById('barcodeId').textContent = `ID: ${uniqueId}`;
+                // Update barcode ID display (removed - not needed for users)
+                // document.getElementById('barcodeId').textContent = `ID: ${uniqueId}`;
                 
                 return uniqueId;
             } catch (error) {
@@ -848,35 +847,76 @@
             
             console.log('Submitting RSVP data:', data);
             
-            // Send to your Google Apps Script
+            // Send to your Google Apps Script - Try CORS first, fallback to no-cors
             fetch('https://script.google.com/macros/s/AKfycbwZbBhVkOFlwtaC7qNKb9XSB_B6lIZaIJv11DvarP1r5-ooOUCKPSOV15SSlfVk_SkGRQ/exec', {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(data)
             }).then(response => {
-                console.log('RSVP submitted');
+                console.log('Response received:', response);
+                
+                // Check if response is ok
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            }).then(result => {
+                console.log('Server response:', result);
                 document.getElementById('loadingMessage').style.display = 'none';
                 
-                // Generate barcode with attendee data
-                const uniqueId = generateBarcode(currentAttendeeData);
-                
-                // Show success message with barcode
-                document.getElementById('successMessage').style.display = 'block';
+                if (result.status === 'success') {
+                    // Generate barcode with attendee data
+                    const uniqueId = generateBarcode(currentAttendeeData);
+                    
+                    // Show success message with barcode
+                    document.getElementById('successMessage').style.display = 'block';
+                } else {
+                    // Show error message
+                    document.getElementById('errorMessage').innerHTML = result.message || 'Registration failed. Please try again.';
+                    document.getElementById('errorMessage').style.display = 'block';
+                    
+                    // Show form again for retry
+                    setTimeout(() => {
+                        document.getElementById('attendeeForm').style.display = 'block';
+                        document.getElementById('errorMessage').style.display = 'none';
+                    }, 5000);
+                }
                 
             }).catch((error) => {
-                console.error('Error submitting RSVP:', error);
+                console.error('Primary request failed, trying fallback:', error);
+                
+                // Fallback to no-cors mode
+                return fetch('https://script.google.com/macros/s/AKfycbwZbBhVkOFlwtaC7qNKb9XSB_B6lIZaIJv11DvarP1r5-ooOUCKPSOV15SSlfVk_SkGRQ/exec', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+            }).then(response => {
+                if (response && response.type === 'opaque') {
+                    // no-cors response - assume success
+                    console.log('Fallback request completed');
+                    document.getElementById('loadingMessage').style.display = 'none';
+                    
+                    // Generate barcode
+                    const uniqueId = generateBarcode(currentAttendeeData);
+                    document.getElementById('successMessage').style.display = 'block';
+                }
+            }).catch((finalError) => {
+                console.error('All requests failed:', finalError);
                 document.getElementById('loadingMessage').style.display = 'none';
-                document.getElementById('errorMessage').innerHTML = 'Registration failed. Please try again or contact us at events@mylestechsolutionsllc.com';
+                document.getElementById('errorMessage').innerHTML = 'Registration failed. Please check your internet connection or contact us at events@mylestechsolutionsllc.com';
                 document.getElementById('errorMessage').style.display = 'block';
                 
                 // Show form again for retry
                 setTimeout(() => {
                     document.getElementById('attendeeForm').style.display = 'block';
                     document.getElementById('errorMessage').style.display = 'none';
-                }, 3000);
+                }, 5000);
             });
         });
     </script>
